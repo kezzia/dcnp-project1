@@ -59,9 +59,10 @@ int get_number_of_strings(char array[]) {
 
 
 int int_array_to_int (int array[], int length) {
+  int num = 0;
   int len_copy = length;
   for (int i = 0; i < length; i++) {
-    num = num + pow(number_of_numbers[i], len_copy);
+    num = num + pow(array[i], len_copy);
     len_copy = len_copy - 1;
   }
   return num;
@@ -91,18 +92,54 @@ int main () {
       char *ptr = strchr(str, ',');
       //while there is a Comma
       while(ptr) {
-        printf("\n%s\n", "There are still commas in the string");
+        //printf("\n%s\n", "There are still commas in the string");
         // find its index
         int index = ptr - str;
-        printf("Comma at index %i\n", index);
+        //printf("Comma at index %i\n", index);
         // replace the comma with a space
         str[index] = ' ';
-        printf("New string: %s", str);
+        //printf("New string: %s", str);
 
         //check for commas again
         ptr = strchr(str, ',');
       }
-      printf("There are no more commas in this string\n");
+      //printf("There are no more commas in this string\n");
+
+      ptr = strstr(str, " ");
+      while (ptr) {
+        //setting this to 6 because the longest possible decimal is 6 digits long.
+        char string_to_convert[6] = {'\0','\0','\0','\0','\0','\0'};
+        char remaining_string[60]; // set to 60 just cuz
+
+        //printf("\nptr is:%s\n", ptr);
+        // find the index of the nearest space
+        int index = ptr - str;
+        printf("Space index at: %i\n", index);
+        //copy everything before the space we find into a new string
+        for (int i = 0; i < index; i++) {
+          string_to_convert[i] = str[i];
+        }
+        //copy everything after the space we find into a new string
+        int a = 0;
+        for (int i = (index + 1); i < 60; i++) {
+          remaining_string[a] = str[i];
+          a++;
+        }
+
+        //clear str and copy remaining_string into it
+        for (int i=0; i<60; i++) {
+          str[i] = '\0';
+        }
+        strcpy(str, remaining_string);
+
+        printf("Converting: %s to binary\n", string_to_convert);
+        printf("Remaining string is:%s\n", str);
+        ptr = strstr(str, " ");
+      }
+      // convert the last number with no space after it
+      char final_string[6];
+      memcpy(final_string, str, 6);
+      printf("Converting: %s to binary\n", final_string);
 
    }
    fclose(fp);
