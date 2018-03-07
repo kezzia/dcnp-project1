@@ -27,6 +27,14 @@ long convert_to_binary(long decimal_num) {
 
 /*quick and dirty function that returns the degree of an integer */
 int intlen(long x) {
+    if(x>=1000000000000000) return 16; //65535 converts to 1111 1111 1111 1111, which has 16 bits
+    if(x>=100000000000000) return 15;
+    if(x>=10000000000000) return 14;
+    if(x>=1000000000000) return 13;
+    if(x>=100000000000) return 12;
+    if(x>=10000000000) return 11;
+    if(x>=1000000000) return 10;
+    if(x>=100000000) return 9;
     if(x>=10000000) return 8;
     if(x>=1000000) return 7;
     if(x>=100000) return 6;
@@ -52,9 +60,6 @@ int main () {
       /* Print each line */
       printf("\n%s\n", "ORIGINAL STRING:");
       printf("%s", str);
-      //printf("str is %i characters long\n", strlen(str));
-
-      //int x = get_number_of_strings(str);
 
       // Removing all commas from the string
 
@@ -103,54 +108,88 @@ int main () {
         strcpy(str, remaining_string);
         //printf("str is %i characters long\n", strlen(str));
         printf("Converting: %s to binary\n", string_to_convert);
+            // split strings into binary
+             int char_as_int;
+             int padding_required;
+             char padded_binary[8];
+             // convert ascii codes into decimals
+             char_as_int = atoi(string_to_convert);
+             //printf("%s as an int is %i\n", string_to_convert, char_as_int);
+             long binary = convert_to_binary(char_as_int);
+             //printf("The binary equivalent is %ld\n", binary);
+
+             // find the length of the binary number
+             padding_required = 8 - intlen(binary);
+             if (padding_required == 0) {
+               printf("The number is two bytes long. No padding required\n");
+             } else if (padding_required > 0) {
+               /* if the binary number has too few bits, add leading zeroes equal to
+               * (8 - len of number)
+               */
+              // printf("The number is too short. Padding.\n");
+               //printf("%i 0's are required\n", padding_required);
+               for (int j = 0; j < padding_required; j++) {
+                 // insert the correct # of leading zeros into a string
+                 padded_binary[j] = '0';
+               }
+               // converts integer into a string
+               char placeholder_str[9];
+               sprintf(placeholder_str, "%ld", binary);
+               int k = 0;
+               // copy the binary number into that same string
+               for (int j = padding_required; j < 9; j++) {
+                 padded_binary[j] = placeholder_str[k];
+                 k =  k + 1;
+               }
+               printf("The padded binary_num is: %s\n", padded_binary);
+             } else {
+               printf("ERROR: This digit is longer than 2 bytes. Discarding\n");
+             }
         printf("Remaining string is:%s\n", str);
         ptr = strstr(str, " ");
+
       }
       // convert the last number with no space after it
       char final_string[6] = {'\0','\0','\0','\0','\0','\0'};
       memcpy(final_string, str, 6);
       printf("Converting: %s to binary\n", final_string);
       //printf("The final string is %i characters long\n", strlen(final_string));
-   }
+      int char_as_int;
+      int padding_required;
+      char padded_binary[8];
+      // convert ascii codes into decimals
+      char_as_int = atoi(final_string);
+      //printf("%s as an int is %i\n", string_to_convert, char_as_int);
+      long binary = convert_to_binary(char_as_int);
+      //printf("The binary equivalent is %ld\n", binary);
 
-   // copy the string with the binary num into it into a string with all of them
-   int len = 3;
-   char test_char[len] = {'0', '1', '0'};
-   int char_as_int;
-   int padding_required;
-   char padded_binary[8];
-   // convert ascii codes into decimals
-   char_as_int = atoi(test_char);
-   printf("%s as an int is %i\n", test_char, char_as_int);
-   long binary = convert_to_binary(char_as_int);
-   printf("The binary equivalent is %ld\n", binary);
-
-   // find the length of the binary number
-   padding_required = 8 - intlen(binary);
-   if (padding_required == 0) {
-     printf("The number is two bytes long. No padding required\n");
-   } else if (padding_required > 0) {
-     /* if the binary number has too few bits, add leading zeroes equal to
-     * (8 - len of number)
-     */
-     printf("The number is too short. Padding.\n");
-     printf("%i 0's are required\n", padding_required);
-     for (int j = 0; j < padding_required; j++) {
-       // insert the correct # of leading zeros into a string
-       padded_binary[j] = '0';
-     }
-     // converts integer into a string
-     char placeholder_str[9];
-     sprintf(placeholder_str, "%ld", binary);
-     int k = 0;
-     // copy the binary number into that same string
-     for (int j = padding_required; j < 9; j++) {
-       padded_binary[j] = placeholder_str[k];
-       k =  k + 1;
-     }
-     printf("The padded binary_num is: %s\n", padded_binary);
-   } else {
-     printf("ERROR: too long.");
+      // find the length of the binary number
+      padding_required = 8 - intlen(binary);
+      if (padding_required == 0) {
+        printf("The number is two bytes long. No padding required\n");
+      } else if (padding_required > 0) {
+        /* if the binary number has too few bits, add leading zeroes equal to
+        * (8 - len of number)
+        */
+       // printf("The number is too short. Padding.\n");
+        //printf("%i 0's are required\n", padding_required);
+        for (int j = 0; j < padding_required; j++) {
+          // insert the correct # of leading zeros into a string
+          padded_binary[j] = '0';
+        }
+        // converts integer into a string
+        char placeholder_str[9];
+        sprintf(placeholder_str, "%ld", binary);
+        int k = 0;
+        // copy the binary number into that same string
+        for (int j = padding_required; j < 9; j++) {
+          padded_binary[j] = placeholder_str[k];
+          k =  k + 1;
+        }
+        printf("The padded binary_num is: %s\n", padded_binary);
+      } else {
+        printf("ERROR: This digit is longer than 2 bytes. Discarding\n");
+      }
    }
 
    fclose(fp);
