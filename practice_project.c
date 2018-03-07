@@ -23,9 +23,30 @@ void print_int_array(int array[], int length) {
   printf("\n");
 }
 
-int convert_to_binary(int decimal) {
 
-  return 0;
+// converts ascii codes into binary numbers (unpadded)
+long convert_to_binary(long decimal_num) {
+    long num, remainder, base = 1, binary = 0, no_of_1s = 0;
+    num = decimal_num;
+    while (num > 0)
+    {
+        remainder = num % 2;
+        /*  To count no.of 1s */
+        if (remainder == 1)
+        {
+            no_of_1s++;
+        }
+        binary = binary + remainder * base;
+        num = num / 2;
+        base = base * 10;
+    }
+    return binary;
+}
+
+// checks to see if the number has enough bits, returns true if it does
+bool has_two_bytes(long binary_num) {
+  //the smallest binary number that uses 8 bits
+  return (binary_num >= 10000000);
 }
 
 /* function to generate and return random numbers */
@@ -57,7 +78,6 @@ int get_number_of_strings(char array[]) {
    return num;
 }
 
-
 int int_array_to_int (int array[], int length) {
   int num = 0;
   int len_copy = length;
@@ -79,10 +99,10 @@ int main () {
       return(-1);
    }
    while( fgets (str, 60, fp)!=NULL ) {
-
       /* Print each line */
       printf("\n%s\n", "ORIGINAL STRING:");
       printf("%s", str);
+      //printf("str is %i characters long\n", strlen(str));
 
       //int x = get_number_of_strings(str);
 
@@ -114,7 +134,7 @@ int main () {
         //printf("\nptr is:%s\n", ptr);
         // find the index of the nearest space
         int index = ptr - str;
-        printf("Space index at: %i\n", index);
+        //printf("Space index at: %i\n", index);
         //copy everything before the space we find into a new string
         for (int i = 0; i < index; i++) {
           string_to_convert[i] = str[i];
@@ -127,21 +147,42 @@ int main () {
         }
 
         //clear str and copy remaining_string into it
-        for (int i=0; i<60; i++) {
+        for (int i=0; i < 60; i++) {
           str[i] = '\0';
         }
         strcpy(str, remaining_string);
-
+        //printf("str is %i characters long\n", strlen(str));
         printf("Converting: %s to binary\n", string_to_convert);
         printf("Remaining string is:%s\n", str);
         ptr = strstr(str, " ");
       }
       // convert the last number with no space after it
-      char final_string[6];
+      char final_string[6] = {'\0','\0','\0','\0','\0','\0'};
       memcpy(final_string, str, 6);
       printf("Converting: %s to binary\n", final_string);
-
+      //printf("The final string is %i characters long\n", strlen(final_string));
    }
+
+   int len = 3;
+   char test_char[len] = {'0', '0', '2'};
+   long ascii_code;
+   for (int i = 0; i < len; i++) {
+     ascii_code = (long)test_char[i];
+     printf("\nThe ascii code of %c is: %d\n", test_char[i], ascii_code);
+     long binary = convert_to_binary(ascii_code);
+     printf("The binary equivalent is %ld\n", binary);
+
+     if (has_two_bytes(binary)) {
+       printf("The number is two bytes long. No padding required\n");
+     }
+     else {
+       printf("The number is too short. Padding.\n");
+     }
+   }
+
+   //convert_to_binary(test_char);
+
+
    fclose(fp);
 
    return(0);
