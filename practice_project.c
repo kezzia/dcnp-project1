@@ -1,28 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <math.h>
 
 //Type Amount Number1 Number2 … NumberN --> Type Amount Number1, Number2, … , NumberN
 //0000 0010 1000111 11111111 --> 0001 002 71,255
-
-void print_char_array(char array[], int length) {
-  /* Print non-null values */
-  for (int i = 0; i <= length; i++) {
-    if (array[i] != '\0') {
-      printf("%c", array[i]);
-    }
-  }
-}
-
-void print_int_array(int array[], int length) {
-  for (int i = 0; i < length; i++) {
-    printf("%u ", array[i]);
-  }
-  printf("\n");
-}
-
 
 // converts ascii codes into binary numbers (unpadded)
 long convert_to_binary(long decimal_num) {
@@ -43,50 +24,19 @@ long convert_to_binary(long decimal_num) {
     return binary;
 }
 
-// checks to see if the number has enough bits, returns true if it does
-bool has_two_bytes(long binary_num) {
-  //the smallest binary number that uses 8 bits
-  return (binary_num >= 10000000);
+
+/*quick and dirty function that returns the degree of an integer */
+int intlen(long x) {
+    if(x>=10000000) return 8;
+    if(x>=1000000) return 7;
+    if(x>=100000) return 6;
+    if(x>=10000) return 5;
+    if(x>=1000) return 4;
+    if(x>=100) return 3;
+    if(x>=10) return 2;
+    return 1;
 }
 
-/* function to generate and return random numbers */
-int get_number_of_strings(char array[]) {
-  int length = 3;
-  int num = 0;
-  // reserve space for the 3 contiguous integers
-  int number_of_numbers[length];
-  char number_of_numbers_char[length];
-
-  //convert chars into ints
-  for (int i = 0; i < length; i++) {
-    int x = -1;
-    if (isdigit(array[i])) {
-      x = array[i] - 48;
-    }
-    number_of_numbers[i] = x;
-    number_of_numbers_char[i] = array[i];
-   }
-
-   int len_copy = length;
-   for (int i = 0; i < length; i++) {
-     num = num + pow(number_of_numbers[i], len_copy);
-     len_copy = len_copy - 1;
-   }
-   printf("The number of entries in this line is: %i\n", num);
-   printf("The string that will be returned is: %s\n", number_of_numbers_char);
-
-   return num;
-}
-
-int int_array_to_int (int array[], int length) {
-  int num = 0;
-  int len_copy = length;
-  for (int i = 0; i < length; i++) {
-    num = num + pow(array[i], len_copy);
-    len_copy = len_copy - 1;
-  }
-  return num;
-}
 
 int main () {
    FILE *fp;
@@ -163,25 +113,45 @@ int main () {
       //printf("The final string is %i characters long\n", strlen(final_string));
    }
 
+   // copy the string with the binary num into it into a string with all of them
    int len = 3;
-   char test_char[len] = {'0', '0', '2'};
-   long ascii_code;
-   for (int i = 0; i < len; i++) {
-     ascii_code = (long)test_char[i];
-     printf("\nThe ascii code of %c is: %d\n", test_char[i], ascii_code);
-     long binary = convert_to_binary(ascii_code);
-     printf("The binary equivalent is %ld\n", binary);
+   char test_char[len] = {'0', '1', '0'};
+   int char_as_int;
+   int padding_required;
+   char padded_binary[8];
+   // convert ascii codes into decimals
+   char_as_int = atoi(test_char);
+   printf("%s as an int is %i\n", test_char, char_as_int);
+   long binary = convert_to_binary(char_as_int);
+   printf("The binary equivalent is %ld\n", binary);
 
-     if (has_two_bytes(binary)) {
-       printf("The number is two bytes long. No padding required\n");
+   // find the length of the binary number
+   padding_required = 8 - intlen(binary);
+   if (padding_required == 0) {
+     printf("The number is two bytes long. No padding required\n");
+   } else if (padding_required > 0) {
+     /* if the binary number has too few bits, add leading zeroes equal to
+     * (8 - len of number)
+     */
+     printf("The number is too short. Padding.\n");
+     printf("%i 0's are required\n", padding_required);
+     for (int j = 0; j < padding_required; j++) {
+       // insert the correct # of leading zeros into a string
+       padded_binary[j] = '0';
      }
-     else {
-       printf("The number is too short. Padding.\n");
+     // converts integer into a string
+     char placeholder_str[9];
+     sprintf(placeholder_str, "%ld", binary);
+     int k = 0;
+     // copy the binary number into that same string
+     for (int j = padding_required; j < 9; j++) {
+       padded_binary[j] = placeholder_str[k];
+       k =  k + 1;
      }
+     printf("The padded binary_num is: %s\n", padded_binary);
+   } else {
+     printf("ERROR: too long.");
    }
-
-   //convert_to_binary(test_char);
-
 
    fclose(fp);
 
