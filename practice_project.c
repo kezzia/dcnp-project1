@@ -49,6 +49,8 @@ int intlen(long x) {
 int main () {
    FILE *fp;
    char str[60];
+   char super_string[60];
+   int super_string_index = 0;
 
    /* opening file for reading */
    fp = fopen("test_file.txt" , "r");
@@ -107,7 +109,7 @@ int main () {
         }
         strcpy(str, remaining_string);
         //printf("str is %i characters long\n", strlen(str));
-        printf("Converting: %s to binary\n", string_to_convert);
+        //printf("Converting: %s to binary\n", string_to_convert);
             // split strings into binary
              int char_as_int;
              int padding_required;
@@ -121,10 +123,26 @@ int main () {
              // find the length of the binary number
              padding_required = 8 - intlen(binary);
              if (padding_required == 0) {
-               printf("The number is two bytes long. No padding required\n");
+               //printf("The number is two bytes long. No padding required\n");
+               char eight_bit_string[9];
+               sprintf(eight_bit_string, "%ld", binary);
+               //printf("Adding %s to super_string\n", eight_bit_string);
+               if (super_string_index < 59) {
+                   strcat(super_string, eight_bit_string);
+                   strcat(super_string, " ");
+                   //printf("Adding %c to superstring\n", padded_binary[i]);
+                   //printf("%c was added to the superstring\n", super_string[super_string_index]);
+                 super_string_index += strlen(eight_bit_string) - 2;
+               } else {
+                 //printf("Super string full. Discarding\n");
+               }
+
+               //printf("super_string: %s\n", super_string);
+               //printf("\n");
+
              } else if (padding_required > 0) {
                /* if the binary number has too few bits, add leading zeroes equal to
-               * (8 - len of number)
+               * (8 - len of number) or (3 - len of_number)
                */
               // printf("The number is too short. Padding.\n");
                //printf("%i 0's are required\n", padding_required);
@@ -141,18 +159,32 @@ int main () {
                  padded_binary[j] = placeholder_str[k];
                  k =  k + 1;
                }
-               printf("The padded binary_num is: %s\n", padded_binary);
+               //printf("The padded binary_num is: %s\n", padded_binary);
+               //printf("Adding %s to super_string\n", padded_binary);
+               if (super_string_index < 59) {
+                   strcat(super_string, padded_binary);
+                   strcat(super_string, " ");
+                   //printf("Adding %c to superstring\n", padded_binary[i]);
+                   //printf("%c was added to the superstring\n", super_string[super_string_index]);
+                 super_string_index += strlen(padded_binary) - 2;
+               } else {
+                 //printf("Super string full. Discarding\n");
+               }
+
+               //printf("super_string: %s\n", super_string);
+               //printf("\n");
              } else {
-               printf("ERROR: This digit is longer than 2 bytes. Discarding\n");
+               //printf("ERROR: This digit is longer than 2 bytes. Discarding\n");
              }
-        printf("Remaining string is:%s\n", str);
+        //printf("Remaining string is:%s\n", str);
         ptr = strstr(str, " ");
+        super_string_index++;
 
       }
       // convert the last number with no space after it
       char final_string[6] = {'\0','\0','\0','\0','\0','\0'};
       memcpy(final_string, str, 6);
-      printf("Converting: %s to binary\n", final_string);
+      //printf("Converting: %s to binary\n", final_string);
       //printf("The final string is %i characters long\n", strlen(final_string));
       int char_as_int;
       int padding_required;
@@ -166,7 +198,21 @@ int main () {
       // find the length of the binary number
       padding_required = 8 - intlen(binary);
       if (padding_required == 0) {
-        printf("The number is two bytes long. No padding required\n");
+        //printf("The number is two bytes long. No padding required\n");
+        char eight_bit_string[9];
+        sprintf(eight_bit_string, "%ld", binary);
+
+        //printf("Adding %s to super_string\n", eight_bit_string);
+        if (super_string_index < 59) {
+            strncpy(super_string, eight_bit_string, 9);
+            //printf("Adding %c to superstring\n", padded_binary[i]);
+            //printf("%c was added to the superstring\n", super_string[super_string_index]);
+            super_string_index += strlen(eight_bit_string) - 2;
+          }
+        else {
+          //printf("Super string full. Discarding\n");
+        }
+
       } else if (padding_required > 0) {
         /* if the binary number has too few bits, add leading zeroes equal to
         * (8 - len of number)
@@ -186,10 +232,31 @@ int main () {
           padded_binary[j] = placeholder_str[k];
           k =  k + 1;
         }
-        printf("The padded binary_num is: %s\n", padded_binary);
+        //printf("The padded binary_num is: %s\n", padded_binary);
+        //printf("Adding %s to super_string\n", padded_binary);
+        if (super_string_index < 59) {
+            strcat(super_string, padded_binary);
+            strcat(super_string, " ");
+            //printf("Adding %c to superstring\n", padded_binary[i]);
+            //printf("%c was added to the superstring\n", super_string[super_string_index]);
+          super_string_index += strlen(padded_binary) - 2;
+        } else {
+          //printf("Super string full. Discarding\n");
+        }
       } else {
-        printf("ERROR: This digit is longer than 2 bytes. Discarding\n");
+        //printf("ERROR: This digit is longer than 2 bytes. Discarding\n");
       }
+
+      //reset this so we know the first one is the number
+      super_string_index = 0;
+      printf("super_string: %s\n", super_string);
+      printf("\n");
+
+      //clear superstring and reset the index for the next entry
+      for (int i = 0; i < 59; i++) {
+        super_string[i] = '\0';
+      }
+      super_string_index = 0;
    }
 
    fclose(fp);
