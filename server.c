@@ -8,7 +8,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-#include "practice_project.h"
 
 /* <server> <port> */
 int main(int argc, char *argv[])
@@ -18,12 +17,15 @@ int main(int argc, char *argv[])
       return 1;
     }
 
+    int n = 0;
+
     int port_num = atoi(argv[1]);
     printf("Starting server on port number %i\n", port_num);
     int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr;
 
-    char sendBuff[1025];
+    char sendBuff[1024];
+    char recvBuff[1024];
 
     /* creating socket and socket descriptor that uses IPv4 address and TCP*/
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -51,12 +53,22 @@ int main(int argc, char *argv[])
         the client socket is returned. */
         connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
 
-        /* As soon as server gets a request from client, it prepares the stuff
-        and writes it to the client socket through its description */
-        snprintf(sendBuff, sizeof(sendBuff), "Don't delete my brackets thanks");
-        write(connfd, sendBuff, strlen(sendBuff));
+        /* server sends message to client's socket through clients socket descriptor
+        and client can read it through normal read call on the its socket
+        descriptor. */
+        while ((n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
+            recvBuff[n] = 0;
+            if(fputs(recvBuff, stdout) == EOF)
+            {
+                printf("\n Error : Fputs error\n");
+            }
+        }
 
-        close(connfd);
+        if (n < 0) {
+            printf("\n Read error \n");
+        }
+
+        printf("\nMessage received!\n");
         /* this apparently ensures that server does not eat up all of your CPU
         processing. [Waka Flocka voice] OK. */
         sleep(1);
