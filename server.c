@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         descriptor. */
         while ((n = read(connfd, recvBuff, sizeof(recvBuff)-1)) > 0) {
             recvBuff[n] = 0;
-            if(fputs(recvBuff, stdout) == EOF)
+            if (fputs(recvBuff, stdout) == EOF)
             {
                 printf("\n Error : Fputs error\n");
             }
