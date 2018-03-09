@@ -27,6 +27,7 @@ long convert_to_binary(long decimal_num) {
 
 /*quick and dirty function that returns the degree of an integer */
 int intlen(long x) {
+    if(x>=10000000000000000) return 17;
     if(x>=1000000000000000) return 16; //65535 converts to 1111 1111 1111 1111, which has 16 bits
     if(x>=100000000000000) return 15;
     if(x>=10000000000000) return 14;
