@@ -82,6 +82,16 @@ int intlen(long x) {
 }
 
 
+int convert_type_0(char input_file_path[], char output_file_target[]) {
+
+}
+
+
+int convert_type_1(char input_file_path[], char output_file_target[]) {
+
+}
+
+
 int type_0_translation(char input_file_path[], char output_file_target[]) {
   printf("RUNNING TYPE 0 TRANSLATION\n");
   FILE * fp;
@@ -331,7 +341,6 @@ int type_1_translation(char input_file_path[], char output_file_target[]) {
    return(0);
 }
 
-
 int type_2_translation(char input_file_path[], char output_file_target[]) {
   printf("RUNNING TYPE 2 TRANSLATION\n");
   FILE * fp;
@@ -349,6 +358,7 @@ int type_2_translation(char input_file_path[], char output_file_target[]) {
      return(-1);
   }
 
+  char temp_dec_as_string[4];
   int space_number = 1;
   while( fgets (str, 60, fp)!=NULL ) {
   int numbers_in_string;
@@ -364,32 +374,50 @@ int type_2_translation(char input_file_path[], char output_file_target[]) {
         j++;
       }/*endif*/
     } /* endfor */
-    printf("\nORIGINAL STRING: %s",str);
 
-    //the number of numbers in the string will be equal to this first one
-    numbers_in_string = convert_from_binary(splitStrings[0]);
-    //printf("There are %i numbers in the string and %i commas to place\n", numbers_in_string, (numbers_in_string-1));
-    int number_of_commas_placed = 0;
-    for(i=0; i < count; i++) {
-      int dec = convert_from_binary(splitStrings[i]);
-      sprintf(dec_as_string, "%i", dec);
-      strcat(super_string, dec_as_string);
-      if (space_number == 1) {
-        strcat(super_string, " ");
-      } else if ((space_number > 1)
-        && (number_of_commas_placed < (numbers_in_string-1))) {
-        strcat(super_string, ",");
-        number_of_commas_placed++;
+    //convert only if it's type 0
+    if (strcmp(splitStrings[0],"0") == 0) {
+        printf("\nORIGINAL STRING: %s",str);
+        strcat(super_string, "1 ");
+        //the number of numbers in the string will be equal to this first one
+        numbers_in_string = convert_from_binary(splitStrings[1]);
+        //printf("There are %i numbers in the string and %i commas to place\n", numbers_in_string, (numbers_in_string-1));
+        int number_of_commas_placed = 0;
+        for(i=1; i < count; i++) {
+          int dec = convert_from_binary(splitStrings[i]);
+
+          if (i == 1) {
+            int padding_required = 3 - intlen(dec);
+            if (padding_required == 1) {
+              sprintf(dec_as_string, "0%i", dec);
+              strcat(super_string, dec_as_string);
+            } else if (padding_required == 2) {
+              sprintf(dec_as_string, "00%i", dec);
+              strcat(super_string, dec_as_string);
+            }
+          } else {
+            sprintf(dec_as_string, "%i", dec);
+            strcat(super_string, dec_as_string);
+          }
+          if (space_number == 1) {
+            strcat(super_string, " ");
+          } else if ((space_number > 1)
+            && (number_of_commas_placed < (numbers_in_string-1))) {
+            strcat(super_string, ",");
+            number_of_commas_placed++;
+          }
+          space_number++;
+        }/* endfor*/
+        fprintf(fn, "%s\n", super_string);
+        printf("CONVERTED STRING: %s\n", super_string);
+        // clear super_string for the next numbers
+        memset(super_string,0,strlen(super_string));
+        space_number = 1;
+      } /*endif*/
+      else { //if type = 1 just copy it in
+        fprintf(fn, "%s\n", str);
       }
-      space_number++;
-    }/* endfor*/
-
-    printf("CONVERTED STRING: %s\n", super_string);
-    // clear super_string for the next numbers
-    memset(super_string,0,strlen(super_string));
-    space_number = 1;
-  } /*end while*/
-
+    } /*endwhile*/
   fclose(fp);
   fclose(fn);
   return 0;
