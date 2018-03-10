@@ -22,8 +22,10 @@ long convert_to_binary(long decimal_num) {
         num = num / 2;
         base = base * 10;
     }
+    printf("%ld as binary is %ld\n", decimal_num, binary );
     return binary;
 }
+
 
 int convert_from_binary(char binary[]) {
   int  num, binary_val, decimal_val = 0, base = 1, rem;
@@ -82,16 +84,6 @@ int intlen(long x) {
 }
 
 
-int convert_type_0(char input_file_path[], char output_file_target[]) {
-
-}
-
-
-int convert_type_1(char input_file_path[], char output_file_target[]) {
-
-}
-
-
 int type_0_translation(char input_file_path[], char output_file_target[]) {
   printf("RUNNING TYPE 0 TRANSLATION\n");
   FILE * fp;
@@ -123,7 +115,9 @@ int type_1_translation(char input_file_path[], char output_file_target[]) {
    FILE * fn;
    char str[60];
    char super_string[60];
+   char splitStrings[10][17]; // we can store 10 words of 17 chars
    int super_string_index = 0;
+   int i, j, count;
 
    /* opening file for reading */
    fp = fopen(input_file_path , "r");
@@ -134,10 +128,6 @@ int type_1_translation(char input_file_path[], char output_file_target[]) {
       return(-1);
    }
    while( fgets (str, 60, fp)!=NULL ) {
-      /* Print each line */
-      printf("\n%s\n", "ORIGINAL STRING:");
-      printf("%s", str);
-
       // Removing all commas from the string
 
       //check for the presence of a comma to start
@@ -155,187 +145,99 @@ int type_1_translation(char input_file_path[], char output_file_target[]) {
         //check for commas again
         ptr = strchr(str, ',');
       }
-      //printf("There are no more commas in this string\n");
 
-      ptr = strstr(str, " ");
-      while (ptr) {
-        //setting this to 6 because the longest possible decimal is 6 digits long.
-        char string_to_convert[7];
-        char remaining_string[60]; // set to 60 just cuz
+      int numbers_in_string;
+      j = 0; count = 0;
+        for (i = 0; i <= strlen(str); i++) {
+          //if space or null found, assign null to splitStrings[count]
+          if ((str[i] == ' ') || (str[i] == '\0')) {
+            splitStrings[count][j] ='\0';
+            count++;
+            j = 0;
+          } else {
+            splitStrings[count][j] = str[i];
+            j++;
+          }/*endif*/
+        } /* endfor */
 
-        //printf("\nptr is:%s\n", ptr);
-        // find the index of the nearest space
-        int index = ptr - str;
-        //printf("Space index at: %i\n", index);
-        //copy everything before the space we find into a new string
-        for (int i = 0; i < index; i++) {
-          string_to_convert[i] = str[i];
+        //convert only if type 1
+        if (strcmp(splitStrings[0],"1") == 0) {
+          printf("\nORIGINAL STRING: %s",str);
+
+          //add the new type to the super_string
+          strcat(super_string, "0 ");
+
+          char binary_as_string[17];
+          for (int i = 1; i < count; i++) {
+            //check for the 16 digit numbers before trying to insert into int
+            if (strcmp(splitStrings[i],"65535") == 0) {
+              strcat(super_string, "1111111111111111 ");
+            } else if (strcmp(splitStrings[i],"65534") == 0) {
+              strcat(super_string, "1111111111111110 ");
+            } else {
+              int binary = convert_to_binary(atol(splitStrings[i]));
+              //number of 0's we must add
+              int padding_required = 16 - intlen(binary);
+
+              switch (padding_required) {
+                case 1:
+                  sprintf(binary_as_string, "0%i", binary);
+                  break;
+                case 2:
+                  sprintf(binary_as_string, "00%i", binary);
+                  break;
+                case 3:
+                  sprintf(binary_as_string, "000%i", binary);
+                  break;
+                case 4:
+                  sprintf(binary_as_string, "0000%i", binary);
+                  break;
+                case 5:
+                  sprintf(binary_as_string, "00000%i", binary);
+                  break;
+                case 6:
+                  sprintf(binary_as_string, "000000%i", binary);
+                  break;
+                case 7:
+                  sprintf(binary_as_string, "0000000%i", binary);
+                  break;
+                case 8:
+                  sprintf(binary_as_string, "00000000%i", binary);
+                  break;
+                case 9:
+                  sprintf(binary_as_string, "000000000%i", binary);
+                  break;
+                case 10:
+                  sprintf(binary_as_string, "0000000000%i", binary);
+                  break;
+                case 11:
+                  sprintf(binary_as_string, "00000000000%i", binary);
+                  break;
+                case 12:
+                  sprintf(binary_as_string, "000000000000%i", binary);
+                  break;
+                case 13:
+                  sprintf(binary_as_string, "0000000000000%i", binary);
+                  break;
+                case 14:
+                  sprintf(binary_as_string, "00000000000000%i", binary);
+                  break;
+                case 15:
+                  sprintf(binary_as_string, "000000000000000%i", binary);
+                  break;
+              }
+              strcat(super_string, binary_as_string);
+              strcat(super_string, " ");
+            }/* endif */
+          }/* endfor */
+        } else { // if type = 0 just copy the string in
+          fprintf(fn, "%s\n", str);
         }
-        //copy everything after the space we find into a new string
-        int a = 0;
-        for (int i = (index + 1); i < 60; i++) {
-          remaining_string[a] = str[i];
-          a++;
-        }
-
-        //clear str and copy remaining_string into it
-        for (int i=0; i < 60; i++) {
-          str[i] = '\0';
-        }
-        strcpy(str, remaining_string);
-        //printf("str is %i characters long\n", strlen(str));
-        //printf("Converting: %s to binary\n", string_to_convert);
-            // split strings into binary
-             int char_as_int;
-             int padding_required;
-             char padded_binary[17];
-             // convert ascii codes into decimals
-             char_as_int = atoi(string_to_convert);
-             //printf("%s as an int is %i\n", string_to_convert, char_as_int);
-             long binary = convert_to_binary(char_as_int);
-             //printf("The binary equivalent is %ld\n", binary);
-
-             // find the length of the binary number
-             padding_required = 16 - intlen(binary);
-             if (padding_required == 0) {
-               //printf("The number is two bytes long. No padding required\n");
-               char sixteen_bit_string[17];
-               sprintf(sixteen_bit_string, "%ld", binary);
-               //printf("Adding %s to super_string\n", sixteen_bit_string);
-               if (super_string_index < 59) {
-                   strcat(super_string, sixteen_bit_string);
-                   strcat(super_string, " ");
-                   //printf("Adding %c to superstring\n", padded_binary[i]);
-                   //printf("%c was added to the superstring\n", super_string[super_string_index]);
-                 super_string_index += strlen(sixteen_bit_string) - 2;
-               } else {
-                 //printf("Super string full. Discarding\n");
-               }
-
-               //printf("super_string: %s\n", super_string);
-               //printf("\n");
-
-             } else if (padding_required > 0) {
-               /* if the binary number has too few bits, add leading zeroes equal to
-               * (16 - len of number) or (3 - len of_number)
-               */
-              // printf("The number is too short. Padding.\n");
-               //printf("%i 0's are required\n", padding_required);
-               for (int j = 0; j < padding_required; j++) {
-                 // insert the correct # of leading zeros into a string
-                 padded_binary[j] = '0';
-               }
-               // converts integer into a string
-               char placeholder_str[9];
-               sprintf(placeholder_str, "%ld", binary);
-               int k = 0;
-               // copy the binary number into that same string
-               for (int j = padding_required; j < 17; j++) {
-                 padded_binary[j] = placeholder_str[k];
-                 k =  k + 1;
-               }
-               //printf("The padded binary_num is: %s\n", padded_binary);
-               //printf("Adding %s to super_string\n", padded_binary);
-               if (super_string_index < 59) {
-                   strcat(super_string, padded_binary);
-                   strcat(super_string, " ");
-                   //printf("Adding %c to superstring\n", padded_binary[i]);
-                   //printf("%c was added to the superstring\n", super_string[super_string_index]);
-                 super_string_index += strlen(padded_binary) - 2;
-               } else {
-                 //printf("Super string full. Discarding\n");
-               }
-
-               //printf("super_string: %s\n", super_string);
-               //printf("\n");
-             } else {
-               //printf("ERROR: This digit is longer than 2 bytes. Discarding\n");
-             }
-        //printf("Remaining string is:%s\n", str);
-        ptr = strstr(str, " ");
-        super_string_index++;
-
-      }
-      // convert the last number with no space after it
-      char final_string[7];
-      memcpy(final_string, str, 7);
-      //printf("Converting: %s to binary\n", final_string);
-      //printf("The final string is %i characters long\n", strlen(final_string));
-      int char_as_int;
-      int padding_required;
-      char padded_binary[17];
-      // convert ascii codes into decimals
-      char_as_int = atoi(final_string);
-      //printf("%s as an int is %i\n", string_to_convert, char_as_int);
-      long binary = convert_to_binary(char_as_int);
-      //printf("The binary equivalent is %ld\n", binary);
-
-      // find the length of the binary number
-      padding_required = 16 - intlen(binary);
-      if (padding_required == 0) {
-        //printf("The number is two bytes long. No padding required\n");
-        char sixteen_bit_string[17];
-        sprintf(sixteen_bit_string, "%ld", binary);
-
-        //printf("Adding %s to super_string\n", sixteen_bit_string);
-        if (super_string_index < 59) {
-            strncpy(super_string, sixteen_bit_string, 17);
-            //printf("Adding %c to superstring\n", padded_binary[i]);
-            //printf("%c was added to the superstring\n", super_string[super_string_index]);
-            super_string_index += strlen(sixteen_bit_string) - 2;
-          }
-        else {
-          //printf("Super string full. Discarding\n");
-        }
-
-      } else if (padding_required > 0) {
-        /* if the binary number has too few bits, add leading zeroes equal to
-        * (16 - len of number)
-        */
-       // printf("The number is too short. Padding.\n");
-        //printf("%i 0's are required\n", padding_required);
-        for (int j = 0; j < padding_required; j++) {
-          // insert the correct # of leading zeros into a string
-          padded_binary[j] = '0';
-        }
-        // converts integer into a string
-        char placeholder_str[17];
-        sprintf(placeholder_str, "%ld", binary);
-        int k = 0;
-        // copy the binary number into that same string
-        for (int j = padding_required; j < 17; j++) {
-          padded_binary[j] = placeholder_str[k];
-          k =  k + 1;
-        }
-        //printf("The padded binary_num is: %s\n", padded_binary);
-        //printf("Adding %s to super_string\n", padded_binary);
-        if (super_string_index < 59) {
-            strcat(super_string, padded_binary);
-            strcat(super_string, " ");
-            //printf("Adding %c to superstring\n", padded_binary[i]);
-            //printf("%c was added to the superstring\n", super_string[super_string_index]);
-          super_string_index += strlen(padded_binary) - 2;
-        } else {
-          //printf("Super string full. Discarding\n");
-        }
-      } else {
-        //printf("ERROR: This digit is longer than 2 bytes. Discarding\n");
-      }
-
-      //reset this so we know the first one is the number
-      super_string_index = 0;
-      printf("CONVERTED STRING:\n %s\n", super_string);
-      printf("\n");
-      strcat(super_string, "\n");
-      fprintf(fn, super_string);
-
-      //clear superstring and reset the index for the next entry
-      for (int i = 0; i < 59; i++) {
-        super_string[i] = '\0';
-      }
-      super_string_index = 0;
-   }
-
+        printf("CONVERTED STRING:\n%s\n", super_string);
+        fprintf(fn, "%s\n", super_string);
+        /*clear super string */
+        memset(super_string,0,strlen(super_string));
+    }/* end while */
    fclose(fp);
    fclose(fn);
    return(0);
@@ -361,6 +263,7 @@ int type_2_translation(char input_file_path[], char output_file_target[]) {
   char temp_dec_as_string[4];
   int space_number = 1;
   while( fgets (str, 60, fp)!=NULL ) {
+    printf("\nORIGINAL STRING: %s",str);
   int numbers_in_string;
   j = 0; count = 0;
     for (i = 0; i <= strlen(str); i++) {
@@ -377,7 +280,6 @@ int type_2_translation(char input_file_path[], char output_file_target[]) {
 
     //convert only if it's type 0
     if (strcmp(splitStrings[0],"0") == 0) {
-        printf("\nORIGINAL STRING: %s",str);
         strcat(super_string, "1 ");
         //the number of numbers in the string will be equal to this first one
         numbers_in_string = convert_from_binary(splitStrings[1]);
@@ -425,6 +327,37 @@ int type_2_translation(char input_file_path[], char output_file_target[]) {
 
 
 int type_3_translation(char input_file_path[], char output_file_target[]) {
-  printf("This transformation type is not yet supported\n");
+  FILE * fp;
+  FILE * fn;
+  char str[60];
+  char splitStrings[10][17]; // we can store 10 words of 17 chars
+  char super_string[60];
+  char dec_as_string[10];
+  fp = fopen(input_file_path , "r");
+  fn = fopen(output_file_target,"w");
+  int i, j, count;
+
+  if(fp == NULL) {
+     perror("Error opening file");
+     return(-1);
+  }
+
+  char temp_dec_as_string[4];
+  int space_number = 1;
+  while( fgets (str, 60, fp)!=NULL ) {
+    int numbers_in_string;
+    j = 0; count = 0;
+
+    for (i = 0; i <= strlen(str); i++) {
+      if (strcmp(splitStrings[0],"0") == 0) {
+        //pass
+      } else if (strcmp(splitStrings[0],"1") == 0) {
+        //pass
+      }
+
+    } /* endfor */
+  } /*endwhile*/
+  fclose(fp);
+  fclose(fn);
   return 0;
 }
