@@ -28,9 +28,6 @@ int main(int argc, char *argv[])
     char sendBuff[1024];
     char recvBuff[1024];
     char tempBuff[1024];
-    char input_file_path[1024];
-    char output_file_target[1024];
-    int to_format;
     int param_number = 0;
 
     /* creating socket and socket descriptor that uses IPv4 address and TCP*/
@@ -68,6 +65,10 @@ int main(int argc, char *argv[])
             {
                 printf("\n Error : Fputs error\n");
             }
+            char input_file_path[1024];
+            char output_file_target[1024];
+            int to_format;
+
 
               /* Iterate through the string and add each char to a temp string.
               when we encounter a ? we know that the parameter has changed.

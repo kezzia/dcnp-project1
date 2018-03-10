@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 //Type Amount Number1 Number2 … NumberN --> Type Amount Number1, Number2, … , NumberN
 //0000 0010 1000111 11111111 --> 0001 002 71,255
@@ -22,6 +23,23 @@ long convert_to_binary(long decimal_num) {
         base = base * 10;
     }
     return binary;
+}
+
+int convert_from_binary(char binary[]) {
+  printf("\nConverting %s to a decimal\n", binary);
+  int decimal = 0;
+  //printf("received number: %s\n", binary);
+  for (int i = 0; i <= strlen(binary); i++) {
+    printf("Number %i = %c\n", (i+1), binary[i] );
+     if (binary[i] == '1') {
+       decimal = decimal + pow(2,i);
+       printf("decimal += 2^%i\n",i);
+       //printf("%i += %i\n", decimal, pow(2,i));
+     }
+     else {printf("decimal += 0\n");}
+  }
+  printf("%s as a decimal num is %i\n", binary, decimal);
+  return decimal;
 }
 
 
@@ -48,6 +66,7 @@ int intlen(long x) {
 
 
 int type_0_translation(char input_file_path[], char output_file_target[]) {
+  printf("RUNNING TYPE 0 TRANSLATION\n");
   FILE * fp;
   FILE * fn;
   char str[60];
@@ -72,6 +91,7 @@ int type_0_translation(char input_file_path[], char output_file_target[]) {
 
 
 int type_1_translation(char input_file_path[], char output_file_target[]) {
+   printf("RUNNING TYPE 1 TRANSLATION\n");
    FILE *fp;
    FILE * fn;
    char str[60];
@@ -296,26 +316,53 @@ int type_1_translation(char input_file_path[], char output_file_target[]) {
 
 
 int type_2_translation(char input_file_path[], char output_file_target[]) {
+  printf("RUNNING TYPE 2 TRANSLATION\n");
   FILE * fp;
   FILE * fn;
   char str[60];
+  char splitStrings[10][17]; // we can store 10 words of 17 chars
+  char super_string[60];
+  char dec_as_string[10];
   fp = fopen(input_file_path , "r");
   fn = fopen(output_file_target,"w");
+  int i, j, count;
 
   if(fp == NULL) {
      perror("Error opening file");
      return(-1);
   }
   while( fgets (str, 60, fp)!=NULL ) {
-     /* Print each line */
-     printf("\n%s\n", "ORIGINAL STRING:");
-     printf("%s", str);
+  j = 0; count = 0;
+    for (i = 0; i <= strlen(str); i++) {
+      //if space or null found, assign null to splitStrings[count]
+      if ((str[i] == ' ') || (str[i] == '\0')) {
+        splitStrings[count][j] ='\0';
+        count++;
+        j = 0;
+      } else {
+        splitStrings[count][j] = str[i];
+        j++;
+      }/*endif*/
+    } /* endfor */
+    printf("\nORIGINAL STRING: %s",str);
 
-  }
+    for(i=0; i < count; i++) {
+      int dec = convert_from_binary(splitStrings[i]);
+      sprintf(dec_as_string, "%i", dec);
+      strcat(super_string, dec_as_string);
+      strcat(super_string, " ");
+    }/* endfor*/
+
+    printf("CONVERTED STRING: %s\n", super_string);
+    // clear super_string for the next numbers
+    memset(super_string,0,strlen(super_string));
+  } /*end while*/
+
   fclose(fp);
   fclose(fn);
   return 0;
 }
+
 
 int type_3_translation(char input_file_path[], char output_file_target[]) {
   printf("This transformation type is not yet supported\n");
