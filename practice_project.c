@@ -48,6 +48,30 @@ int intlen(long x) {
 
 
 int type_0_translation(char input_file_path[], char output_file_target[]) {
+  FILE * fp;
+  FILE * fn;
+  char str[60];
+  fp = fopen(input_file_path , "r");
+  fn = fopen(output_file_target,"w");
+
+  if(fp == NULL) {
+     perror("Error opening file");
+     return(-1);
+  }
+  while( fgets (str, 60, fp)!=NULL ) {
+     /* Print each line */
+     printf("\n%s\n", "ORIGINAL STRING:");
+     printf("%s", str);
+
+     fprintf(fn, str);
+  }
+  fclose(fp);
+  fclose(fn);
+  return 0;
+}
+
+
+int type_1_translation(char input_file_path[], char output_file_target[]) {
    FILE *fp;
    FILE * fn;
    char str[60];
@@ -270,13 +294,26 @@ int type_0_translation(char input_file_path[], char output_file_target[]) {
    return(0);
 }
 
-int type_1_translation(char input_file_path[], char output_file_target[]) {
-  printf("This transformation type is not yet supported\n");
-  return 0;
-}
 
 int type_2_translation(char input_file_path[], char output_file_target[]) {
-  printf("This transformation type is not yet supported\n");
+  FILE * fp;
+  FILE * fn;
+  char str[60];
+  fp = fopen(input_file_path , "r");
+  fn = fopen(output_file_target,"w");
+
+  if(fp == NULL) {
+     perror("Error opening file");
+     return(-1);
+  }
+  while( fgets (str, 60, fp)!=NULL ) {
+     /* Print each line */
+     printf("\n%s\n", "ORIGINAL STRING:");
+     printf("%s", str);
+
+  }
+  fclose(fp);
+  fclose(fn);
   return 0;
 }
 
