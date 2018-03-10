@@ -47,14 +47,17 @@ int intlen(long x) {
 }
 
 
-int main () {
+int type_0_translation(char input_file_path[], char output_file_target[]) {
    FILE *fp;
+   FILE * fn;
    char str[60];
    char super_string[60];
    int super_string_index = 0;
 
    /* opening file for reading */
-   fp = fopen("test_file.txt" , "r");
+   fp = fopen(input_file_path , "r");
+   fn = fopen(output_file_target,"w");
+
    if(fp == NULL) {
       perror("Error opening file");
       return(-1);
@@ -86,7 +89,7 @@ int main () {
       ptr = strstr(str, " ");
       while (ptr) {
         //setting this to 6 because the longest possible decimal is 6 digits long.
-        char string_to_convert[6] = {'\0','\0','\0','\0','\0','\0'};
+        char string_to_convert[7];
         char remaining_string[60]; // set to 60 just cuz
 
         //printf("\nptr is:%s\n", ptr);
@@ -114,7 +117,7 @@ int main () {
             // split strings into binary
              int char_as_int;
              int padding_required;
-             char padded_binary[8];
+             char padded_binary[17];
              // convert ascii codes into decimals
              char_as_int = atoi(string_to_convert);
              //printf("%s as an int is %i\n", string_to_convert, char_as_int);
@@ -122,18 +125,18 @@ int main () {
              //printf("The binary equivalent is %ld\n", binary);
 
              // find the length of the binary number
-             padding_required = 8 - intlen(binary);
+             padding_required = 16 - intlen(binary);
              if (padding_required == 0) {
                //printf("The number is two bytes long. No padding required\n");
-               char eight_bit_string[9];
-               sprintf(eight_bit_string, "%ld", binary);
-               //printf("Adding %s to super_string\n", eight_bit_string);
+               char sixteen_bit_string[17];
+               sprintf(sixteen_bit_string, "%ld", binary);
+               //printf("Adding %s to super_string\n", sixteen_bit_string);
                if (super_string_index < 59) {
-                   strcat(super_string, eight_bit_string);
+                   strcat(super_string, sixteen_bit_string);
                    strcat(super_string, " ");
                    //printf("Adding %c to superstring\n", padded_binary[i]);
                    //printf("%c was added to the superstring\n", super_string[super_string_index]);
-                 super_string_index += strlen(eight_bit_string) - 2;
+                 super_string_index += strlen(sixteen_bit_string) - 2;
                } else {
                  //printf("Super string full. Discarding\n");
                }
@@ -143,7 +146,7 @@ int main () {
 
              } else if (padding_required > 0) {
                /* if the binary number has too few bits, add leading zeroes equal to
-               * (8 - len of number) or (3 - len of_number)
+               * (16 - len of number) or (3 - len of_number)
                */
               // printf("The number is too short. Padding.\n");
                //printf("%i 0's are required\n", padding_required);
@@ -156,7 +159,7 @@ int main () {
                sprintf(placeholder_str, "%ld", binary);
                int k = 0;
                // copy the binary number into that same string
-               for (int j = padding_required; j < 9; j++) {
+               for (int j = padding_required; j < 17; j++) {
                  padded_binary[j] = placeholder_str[k];
                  k =  k + 1;
                }
@@ -183,13 +186,13 @@ int main () {
 
       }
       // convert the last number with no space after it
-      char final_string[6] = {'\0','\0','\0','\0','\0','\0'};
-      memcpy(final_string, str, 6);
+      char final_string[7];
+      memcpy(final_string, str, 7);
       //printf("Converting: %s to binary\n", final_string);
       //printf("The final string is %i characters long\n", strlen(final_string));
       int char_as_int;
       int padding_required;
-      char padded_binary[8];
+      char padded_binary[17];
       // convert ascii codes into decimals
       char_as_int = atoi(final_string);
       //printf("%s as an int is %i\n", string_to_convert, char_as_int);
@@ -197,18 +200,18 @@ int main () {
       //printf("The binary equivalent is %ld\n", binary);
 
       // find the length of the binary number
-      padding_required = 8 - intlen(binary);
+      padding_required = 16 - intlen(binary);
       if (padding_required == 0) {
         //printf("The number is two bytes long. No padding required\n");
-        char eight_bit_string[9];
-        sprintf(eight_bit_string, "%ld", binary);
+        char sixteen_bit_string[17];
+        sprintf(sixteen_bit_string, "%ld", binary);
 
-        //printf("Adding %s to super_string\n", eight_bit_string);
+        //printf("Adding %s to super_string\n", sixteen_bit_string);
         if (super_string_index < 59) {
-            strncpy(super_string, eight_bit_string, 9);
+            strncpy(super_string, sixteen_bit_string, 17);
             //printf("Adding %c to superstring\n", padded_binary[i]);
             //printf("%c was added to the superstring\n", super_string[super_string_index]);
-            super_string_index += strlen(eight_bit_string) - 2;
+            super_string_index += strlen(sixteen_bit_string) - 2;
           }
         else {
           //printf("Super string full. Discarding\n");
@@ -216,7 +219,7 @@ int main () {
 
       } else if (padding_required > 0) {
         /* if the binary number has too few bits, add leading zeroes equal to
-        * (8 - len of number)
+        * (16 - len of number)
         */
        // printf("The number is too short. Padding.\n");
         //printf("%i 0's are required\n", padding_required);
@@ -225,11 +228,11 @@ int main () {
           padded_binary[j] = '0';
         }
         // converts integer into a string
-        char placeholder_str[9];
+        char placeholder_str[17];
         sprintf(placeholder_str, "%ld", binary);
         int k = 0;
         // copy the binary number into that same string
-        for (int j = padding_required; j < 9; j++) {
+        for (int j = padding_required; j < 17; j++) {
           padded_binary[j] = placeholder_str[k];
           k =  k + 1;
         }
@@ -250,8 +253,10 @@ int main () {
 
       //reset this so we know the first one is the number
       super_string_index = 0;
-      printf("super_string: %s\n", super_string);
+      printf("CONVERTED STRING:\n %s\n", super_string);
       printf("\n");
+      strcat(super_string, "\n");
+      fprintf(fn, super_string);
 
       //clear superstring and reset the index for the next entry
       for (int i = 0; i < 59; i++) {
@@ -261,6 +266,21 @@ int main () {
    }
 
    fclose(fp);
-
+   fclose(fn);
    return(0);
+}
+
+int type_1_translation(char input_file_path[], char output_file_target[]) {
+  printf("This transformation type is not yet supported\n");
+  return 0;
+}
+
+int type_2_translation(char input_file_path[], char output_file_target[]) {
+  printf("This transformation type is not yet supported\n");
+  return 0;
+}
+
+int type_3_translation(char input_file_path[], char output_file_target[]) {
+  printf("This transformation type is not yet supported\n");
+  return 0;
 }

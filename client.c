@@ -11,7 +11,7 @@
 
 /* <client> <server IP> <server port> <file path> <to format> <to name> */
 int main(int argc, char *argv[]) {
-    int sockfd = 0, n = 0, port_num = 0, to_format = 0;
+    int sockfd = 0, port_num = 0, to_format = 0;
     char recvBuff[1024];
     char sendBuff[1024];
     struct sockaddr_in serv_addr;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* creating a string with the 3 things we need to send to the server */
-    sprintf(server_msg, "%s %i %s", input_file_path, to_format,
+    sprintf(server_msg, "%s?%i?%s", input_file_path, to_format,
       output_file_target);
 
     memset(recvBuff, '0', sizeof(recvBuff));
