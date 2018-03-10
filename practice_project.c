@@ -26,20 +26,37 @@ long convert_to_binary(long decimal_num) {
 }
 
 int convert_from_binary(char binary[]) {
-  printf("\nConverting %s to a decimal\n", binary);
-  int decimal = 0;
-  //printf("received number: %s\n", binary);
-  for (int i = 0; i <= strlen(binary); i++) {
-    printf("Number %i = %c\n", (i+1), binary[i] );
-     if (binary[i] == '1') {
-       decimal = decimal + pow(2,i);
-       printf("decimal += 2^%i\n",i);
-       //printf("%i += %i\n", decimal, pow(2,i));
-     }
-     else {printf("decimal += 0\n");}
+  int  num, binary_val, decimal_val = 0, base = 1, rem;
+  unsigned long long sixteen_digit_integer;
+  /*checks to see if the number is has a 1 in the 2^16 space.
+    integers and longs can't hold 16 digit numbers*/
+  if (binary[0] == '1') {
+    //manually convert the 16 digit int to a ull
+    if (strcmp("111111111111", binary)) {
+      sixteen_digit_integer = 1111111111111111;
+    } else {
+      sixteen_digit_integer = 1111111111111110;
+    }
+    while ( sixteen_digit_integer > 0)
+    {
+        rem = sixteen_digit_integer % 10;
+        decimal_val = decimal_val + rem * base;
+        sixteen_digit_integer = sixteen_digit_integer / 10 ;
+        base = base * 2;
+    }
+  } else {
+    binary_val = atoi(binary);
+    num = atoi(binary);
+
+    while (num > 0)
+    {
+        rem = num % 10;
+        decimal_val = decimal_val + rem * base;
+        num = num / 10 ;
+        base = base * 2;
+    }
   }
-  printf("%s as a decimal num is %i\n", binary, decimal);
-  return decimal;
+  return decimal_val;
 }
 
 
@@ -331,7 +348,10 @@ int type_2_translation(char input_file_path[], char output_file_target[]) {
      perror("Error opening file");
      return(-1);
   }
+
+  int space_number = 1;
   while( fgets (str, 60, fp)!=NULL ) {
+  int numbers_in_string;
   j = 0; count = 0;
     for (i = 0; i <= strlen(str); i++) {
       //if space or null found, assign null to splitStrings[count]
@@ -346,16 +366,28 @@ int type_2_translation(char input_file_path[], char output_file_target[]) {
     } /* endfor */
     printf("\nORIGINAL STRING: %s",str);
 
+    //the number of numbers in the string will be equal to this first one
+    numbers_in_string = convert_from_binary(splitStrings[0]);
+    //printf("There are %i numbers in the string and %i commas to place\n", numbers_in_string, (numbers_in_string-1));
+    int number_of_commas_placed = 0;
     for(i=0; i < count; i++) {
       int dec = convert_from_binary(splitStrings[i]);
       sprintf(dec_as_string, "%i", dec);
       strcat(super_string, dec_as_string);
-      strcat(super_string, " ");
+      if (space_number == 1) {
+        strcat(super_string, " ");
+      } else if ((space_number > 1)
+        && (number_of_commas_placed < (numbers_in_string-1))) {
+        strcat(super_string, ",");
+        number_of_commas_placed++;
+      }
+      space_number++;
     }/* endfor*/
 
     printf("CONVERTED STRING: %s\n", super_string);
     // clear super_string for the next numbers
     memset(super_string,0,strlen(super_string));
+    space_number = 1;
   } /*end while*/
 
   fclose(fp);
