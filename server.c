@@ -83,7 +83,6 @@ int main(int argc, char *argv[])
               printf("\n");
               for (i = 0; i < strlen(recvBuff); i++) {
                 if ((recvBuff[i] == '?') || (recvBuff[i] == '\0')) {
-                  printf("\nCHARACTER FOUND AT INDEX %i\n", i);
                   strncpy(tempBuff, (recvBuff+temp_iterator),((i)-temp_iterator));
                   //printf("tempBuff:%s\n", tempBuff);
                   /* copy tempBuff into approrpriate string */
